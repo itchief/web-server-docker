@@ -1,0 +1,57 @@
+version: "3"
+
+services:
+  php-apache:
+    build: ./html
+    user: 1000:1000
+    environment:
+      - APACHE_RUN_USER=#1000
+    restart: always
+    ports:
+      - 80:80
+    volumes:
+      - ".:/var/www"
+    networks:
+      - web-dev
+  mysql:
+    image: "mysql:5.7"
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: root
+    ports:
+      - "3306:3306"
+    command: mysqld --sql-mode=NO_ENGINE_SUBSTITUTION
+    volumes:
+      - "./db:/var/lib/mysql"
+    networks:
+      - web-dev
+  adminer:
+    image: adminer
+    restart: always
+    ports:
+      - 8080:8080
+    networks:
+      - web-dev
+  mailhog:
+    image: mailhog/mailhog
+    ports:
+      - "1025:1025"
+      - "8025:8025"
+    networks:
+      - web-dev
+  phpmyadmin:
+    image: "phpmyadmin/phpmyadmin"
+    links:
+      - mysql:mysql
+    ports:
+      - "8081:80"
+    environment:
+      MYSQL_USERNAME: "root"
+      MYSQL_ROOT_PASSWORD: "root"
+      PMA_HOST: mysql
+    networks:
+      - web-dev
+networks:
+  web-dev:
+    driver: bridge

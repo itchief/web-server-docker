@@ -1,0 +1,1 @@
+# Docker with Apache, PHP, MySQL, phpMyAdmin and MailHog
